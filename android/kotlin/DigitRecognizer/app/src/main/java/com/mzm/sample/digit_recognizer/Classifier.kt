@@ -148,7 +148,7 @@ constructor(private val context: Context) {
         private val LOG_TAG = Classifier::class.java.simpleName
 
         // Name of the model file (under assets folder)
-        private val MODEL_PATH = "mnist_1.14.0_2019-09-04.tflite"
+        private val MODEL_PATH = "mnist.tflite"
 
         // Input size
         private val DIM_BATCH_SIZE = 1    // batch size

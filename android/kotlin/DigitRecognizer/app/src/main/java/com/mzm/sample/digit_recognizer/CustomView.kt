@@ -13,44 +13,35 @@ import android.view.View
  */
 class CustomView(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
+    private val path = Path()
     private lateinit var canvas: Canvas
-    private lateinit var paint: Paint
-    private lateinit var path: Path
     private lateinit var bitmap: Bitmap
 
     private var currX = 0f
     private var currY = 0f
 
-    init {
-        init()
-    }
+    // Paint for drawing digit
+    private val paint = Paint().apply{
+        isAntiAlias = true          // smooth out edges of drawing
+        isDither = true
+        color = Color.WHITE         // set stroke color to black
+        style = Paint.Style.STROKE
+        strokeJoin = Paint.Join.ROUND
+        strokeWidth = 24f
 
-    private fun init() {
-        val dm = context.resources.displayMetrics
-        bitmap = Bitmap.createBitmap(dm.widthPixels, dm.heightPixels, Bitmap.Config.ARGB_8888)
-        canvas = Canvas(bitmap!!)
-        path = Path()
-        paint = Paint()
-
-        paint.isAntiAlias = true       // smooth out edges of drawing
-        paint.isDither = true
-        paint.color = Color.WHITE    // set stroke color to black
-        paint.style = Paint.Style.STROKE
-        paint.strokeJoin = Paint.Join.ROUND
-        paint.strokeWidth = 48f
-    }
-
-    override fun onDraw(canvas: Canvas) {
-        super.onDraw(canvas)
-        canvas.drawColor(Color.BLACK)  // set canvas background to black
-        canvas.drawBitmap(bitmap!!, 0f, 0f, paint)
-        canvas.drawPath(path!!, paint!!)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
         canvas = Canvas(bitmap)
+    }
+
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
+        canvas.drawColor(Color.BLACK)  // set canvas background to black
+        canvas.drawBitmap(bitmap, 0f, 0f, paint)
+        canvas.drawPath(path, paint)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -71,7 +62,6 @@ class CustomView(context: Context, attrs: AttributeSet) : View(context, attrs) {
                 invalidate()
             }
         }
-        super.onTouchEvent(event)
         return true
     }
 
@@ -93,7 +83,7 @@ class CustomView(context: Context, attrs: AttributeSet) : View(context, attrs) {
     }
 
     private fun touch_up() {
-        path.lineTo(x, y)
+        path.lineTo(currX, currY)
         canvas.drawPath(path, paint)
         path.reset()
     }
