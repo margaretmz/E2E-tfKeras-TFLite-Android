@@ -8,41 +8,41 @@ import android.widget.TextView
 import java.io.IOException
 
 /**
+ *
  * Margaret Maynard-Reid
  * 1/29/2019
  *
+ *This sample app shows you how to implement a tflite model in an Android app:
  *
- * This sample code shows you how to implement a tflite model in an Android app:
- *
- *
- * Refer to this notebook to see how to train a MNIST classifier and generate mnist.tflite
- * https://github.com/margaretmz/deep-learning/blob/master/tfkeras-tflite-android/mnist_keras_to_tflite.ipynb
+ * Refer to the mnist_keras_to_tflite.ipynb notebook on how to
+ * - train a MNIST classifier
+ * - and generate mnist.tflite model file
  *
  * Then follow these steps to implement the tflite model on Android:
- * - Place mnist.tflite model under assets folder
- * - Update build.gradle to include tflite dependency
- * - Create CustomView for user to draw digits
+ * - Place mnist.tflite model under /assets folder
+ * - Update app level build.gradle to include tflite dependency
  * - Create a Classifier that does digit classification
+ * - Create CustomView for user to draw digits
+ * - Create MainActivity with a simple UI that takes user drawing digit as input
+ * and displays the classified digit in the UI
  *
- *
- * It has a simple UI that takes user drawing digit as input
- * then displays the classified result in the UI
  */
 class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     private var customView: CustomView? = null
-    private var resultTextView: TextView? = null
+    private var predictionTextView: TextView? = null
+
     private lateinit var classifier: Classifier
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        findViewById<View>(R.id.button_clear).setOnClickListener(this)
         findViewById<View>(R.id.button_classify).setOnClickListener(this)
+        findViewById<View>(R.id.button_reset).setOnClickListener(this)
 
         customView = findViewById(R.id.customview)
-        resultTextView = findViewById(R.id.result)
+        predictionTextView = findViewById(R.id.predictedDigit)
 
         try {
             classifier = Classifier(this)
@@ -60,12 +60,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 if(bitmap!=null) {
                     val digit = classifier.classify(bitmap)
                     Log.i(LOG_TAG, digit.toString())
-                    resultTextView!!.text = digit.toString()
+                    predictionTextView!!.text = digit.toString()
                 }
             }
-            R.id.button_clear -> {
-                customView?.clear()
-                resultTextView!!.text = ""
+            R.id.button_reset -> {
+                customView?.reset()
+                predictionTextView!!.text = ""
             }
         }
 

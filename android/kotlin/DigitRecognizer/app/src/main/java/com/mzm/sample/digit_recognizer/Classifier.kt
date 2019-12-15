@@ -20,14 +20,6 @@ constructor(private val context: Context) {
     // TensorFlow Lite interpreter for running inference with the tflite model
     private val interpreter: Interpreter
 
-    /* Input */
-    // A ByteBuffer to hold image data for input to model
-    private val inputImage: ByteBuffer?
-
-    // Output array [batch_size, number of digits]
-    // 10 floats, each corresponds to the probability of each digit
-    private val outputArray = Array(DIM_BATCH_SIZE) { FloatArray(DIGITS) }
-
     // Initialize TFLite interpreter
     init {
 
@@ -43,13 +35,6 @@ constructor(private val context: Context) {
         // Create & initialize TFLite interpreter
         interpreter = Interpreter(model, options)
 
-        // Create input image bytebuffer
-        inputImage = ByteBuffer.allocateDirect(4
-                * DIM_BATCH_SIZE    // 1
-                * DIM_INPUT_WIDTH   // 28
-                * DIM_INPUT_HEIGHT  // 28
-                * DIM_PIXEL_SIZE)   // 1
-        inputImage.order(ByteOrder.nativeOrder())
     }
 
     // Memory-map the model file in Assets
@@ -67,15 +52,25 @@ constructor(private val context: Context) {
      * To classify an image, follow these steps:
      * 1. pre-process the input image
      * 2. run inference with the model
-     * 3. post-process the output result for display in UI
+     * 3. post-process the output result for displaying in UI
      *
      * @param bitmap
      * @return the digit with the highest probability
      */
     fun classify(bitmap: Bitmap): Int {
-        preprocess(bitmap)
-        runInference()
-        return postprocess()
+
+        // 1. Pre-processing
+
+        // Output array [batch_size, number of digits]
+        val inputByteBuffer = preprocess(bitmap)                    // Input must be a ByteBuffer
+        // 10 floats, each corresponds to the probability of each digit
+        val outputArray= Array(DIM_BATCH_SIZE) { FloatArray(NUM_DIGITS) }
+
+        // 2. Run inference
+        interpreter.run(inputByteBuffer, outputArray)
+
+        // 3. Post-processing
+        return postprocess(outputArray)
     }
 
     /**
@@ -83,16 +78,19 @@ constructor(private val context: Context) {
      *
      * @param bitmap
      */
-    private fun preprocess(bitmap: Bitmap) {
+    private fun preprocess(bitmap: Bitmap): ByteBuffer {
         val scaledBitmap = Bitmap.createScaledBitmap(bitmap, 28, 28, false)
-        convertBitmapToByteBuffer(scaledBitmap)
+        return convertBitmapToByteBuffer(scaledBitmap)
     }
 
-    private fun convertBitmapToByteBuffer(bitmap: Bitmap) {
-        if (inputImage == null) {
-            return
-        }
-        inputImage.rewind()
+    private fun convertBitmapToByteBuffer(bitmap: Bitmap): ByteBuffer {
+        // Create input image bytebuffer
+        val byteBuffer = ByteBuffer.allocateDirect(4
+                * DIM_BATCH_SIZE    // 1
+                * DIM_INPUT_WIDTH   // 28
+                * DIM_INPUT_HEIGHT  // 28
+                * DIM_PIXEL_SIZE)   // 1
+        byteBuffer.order(ByteOrder.nativeOrder())
 
         val imagePixels = IntArray(DIM_INPUT_WIDTH * DIM_INPUT_HEIGHT)
         bitmap.getPixels(imagePixels, 0, bitmap.width, 0, 0,
@@ -102,9 +100,11 @@ constructor(private val context: Context) {
         for (i in 0 until DIM_INPUT_WIDTH) {
             for (j in 0 until DIM_INPUT_HEIGHT) {
                 val `val` = imagePixels[pixel++]
-                inputImage.putFloat(convertToGreyScale(`val`))
+                byteBuffer.putFloat(convertToGreyScale(`val`))
             }
         }
+
+        return byteBuffer
     }
 
     private fun convertToGreyScale(color: Int): Float {
@@ -117,20 +117,11 @@ constructor(private val context: Context) {
     }
 
     /**
-     * Run inference with the classifier model
-     * Input is image
-     * Output is an array of probabilities
-     */
-    private fun runInference() {
-        interpreter.run(inputImage, outputArray)
-    }
-
-    /**
-     * Figure out the prediction of digit by finding the index with the highest probability
+     * Find digit prediction with the highest probability
      *
      * @return
      */
-    private fun postprocess(): Int {
+    private fun postprocess(outputArray: Array<FloatArray>): Int {
         // Index with highest probability
         var maxIndex = -1
         var maxProb = 0.0f
@@ -147,7 +138,7 @@ constructor(private val context: Context) {
 
         private val LOG_TAG = Classifier::class.java.simpleName
 
-        // Name of the model file (under assets folder)
+        // Name of the model file (under /assets folder)
         private val MODEL_PATH = "mnist.tflite"
 
         // Input size
@@ -158,7 +149,7 @@ constructor(private val context: Context) {
 
         /* Output*/
         // Output size is 10 (number of digits)
-        private val DIGITS = 10
+        private val NUM_DIGITS = 10
     }
 
 }

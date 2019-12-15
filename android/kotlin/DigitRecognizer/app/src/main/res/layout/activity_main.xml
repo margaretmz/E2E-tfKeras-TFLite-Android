@@ -29,7 +29,7 @@
             android:text="Classify" />
         <!-- Reset canvas -->
         <Button
-            android:id="@+id/button_clear"
+            android:id="@+id/button_reset"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Reset" />
@@ -55,9 +55,9 @@
             android:layout_marginRight="16sp"
             android:text="Prediction" />
 
-        <!-- Classification result - which handwritten digit? -->
+        <!-- Classification prediction - which handwritten digit? -->
         <TextView
-            android:id="@+id/result"
+            android:id="@+id/predictedDigit"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:gravity="center_horizontal"

@@ -88,7 +88,7 @@ class CustomView(context: Context, attrs: AttributeSet) : View(context, attrs) {
         path.reset()
     }
 
-    fun clear() {
+    fun reset() {
         path.reset()
         bitmap = Bitmap.createBitmap(bitmap.width, bitmap.height, Bitmap.Config.ARGB_8888)
         canvas = Canvas(bitmap)
