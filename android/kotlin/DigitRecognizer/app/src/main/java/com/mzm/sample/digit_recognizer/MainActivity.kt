@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
-import android.widget.TextView
+import kotlinx.android.synthetic.main.activity_main.*
 import java.io.IOException
 
 /**
@@ -29,20 +29,15 @@ import java.io.IOException
  */
 class MainActivity : AppCompatActivity(), View.OnClickListener {
 
-    private var customView: CustomView? = null
-    private var predictionTextView: TextView? = null
-
     private lateinit var classifier: Classifier
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        findViewById<View>(R.id.button_classify).setOnClickListener(this)
-        findViewById<View>(R.id.button_reset).setOnClickListener(this)
+        button_classify.setOnClickListener(this)
+        button_reset.setOnClickListener(this)
 
-        customView = findViewById(R.id.customview)
-        predictionTextView = findViewById(R.id.predictedDigit)
 
         try {
             classifier = Classifier(this)
@@ -56,16 +51,16 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         when (view.id) {
             R.id.button_classify -> {
-                val bitmap = customView?.getBitmap()
+                val bitmap = custom_view_draw?.getBitmap()
                 if(bitmap!=null) {
                     val digit = classifier.classify(bitmap)
                     Log.i(LOG_TAG, digit.toString())
-                    predictionTextView!!.text = digit.toString()
+                    text_view_predicted_digit!!.text = digit.toString()
                 }
             }
             R.id.button_reset -> {
-                customView?.reset()
-                predictionTextView!!.text = ""
+                custom_view_draw?.reset()
+                text_view_predicted_digit!!.text = ""
             }
         }
 

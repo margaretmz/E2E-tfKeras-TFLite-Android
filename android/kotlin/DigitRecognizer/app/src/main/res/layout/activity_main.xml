@@ -37,7 +37,7 @@
 
     <!-- Custom View for drawing the digit -->
     <com.mzm.sample.digit_recognizer.CustomView
-        android:id="@+id/customview"
+        android:id="@+id/custom_view_draw"
         android:layout_width="250dp"
         android:layout_height="250dp"
         android:layout_gravity="center"
@@ -57,7 +57,7 @@
 
         <!-- Classification prediction - which handwritten digit? -->
         <TextView
-            android:id="@+id/predictedDigit"
+            android:id="@+id/text_view_predicted_digit"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:gravity="center_horizontal"
