@@ -3,7 +3,6 @@ package com.mzm.sample.digit_recognizer
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import android.view.View
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.IOException
 
@@ -27,7 +26,7 @@ import java.io.IOException
  * and displays the classified digit in the UI
  *
  */
-class MainActivity : AppCompatActivity(), View.OnClickListener {
+class MainActivity : AppCompatActivity(){
 
     private lateinit var classifier: Classifier
 
@@ -35,39 +34,29 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        button_classify.setOnClickListener(this)
-        button_reset.setOnClickListener(this)
-
-
         try {
             classifier = Classifier(this)
         } catch (e: IOException) {
             e.printStackTrace()
         }
 
-    }
+        //Classify the hand-written digit
+        button_classify.setOnClickListener {
+            val bitmap = custom_view_draw?.getBitmap()
+            if(bitmap!=null) {
+                val digit = classifier.classify(bitmap)
+                Log.i(LOG_TAG, digit.toString())
+                text_view_predicted_digit!!.text = digit.toString()
+            } }
 
-    override fun onClick(view: View) {
-
-        when (view.id) {
-            R.id.button_classify -> {
-                val bitmap = custom_view_draw?.getBitmap()
-                if(bitmap!=null) {
-                    val digit = classifier.classify(bitmap)
-                    Log.i(LOG_TAG, digit.toString())
-                    text_view_predicted_digit!!.text = digit.toString()
-                }
-            }
-            R.id.button_reset -> {
-                custom_view_draw?.reset()
-                text_view_predicted_digit!!.text = ""
-            }
+        //Clear the drawing canvas
+        button_reset.setOnClickListener {
+            custom_view_draw?.reset()
+            text_view_predicted_digit!!. text = ""
         }
-
     }
 
     companion object {
-
         private val LOG_TAG = Classifier::class.java.simpleName
     }
 
