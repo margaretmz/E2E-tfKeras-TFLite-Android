@@ -21,7 +21,7 @@ class CustomView(context: Context, attrs: AttributeSet) : View(context, attrs) {
     private var currY = 0f
 
     // Paint for drawing digit
-    private val paint = Paint().apply{
+    private val paint = Paint().apply {
         isAntiAlias = true          // smooth out edges of drawing
         isDither = true
         color = Color.WHITE         // set stroke color to black

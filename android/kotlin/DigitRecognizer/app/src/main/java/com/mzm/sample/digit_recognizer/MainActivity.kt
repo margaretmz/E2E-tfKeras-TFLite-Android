@@ -26,7 +26,7 @@ import java.io.IOException
  * and displays the classified digit in the UI
  *
  */
-class MainActivity : AppCompatActivity(){
+class MainActivity : AppCompatActivity() {
 
     private lateinit var classifier: Classifier
 
@@ -40,19 +40,20 @@ class MainActivity : AppCompatActivity(){
             e.printStackTrace()
         }
 
-        //Classify the hand-written digit
+        // Classify the hand-written digit
         button_classify.setOnClickListener {
             val bitmap = custom_view_draw?.getBitmap()
-            if(bitmap!=null) {
+            if (bitmap != null) {
                 val digit = classifier.classify(bitmap)
                 Log.i(LOG_TAG, digit.toString())
                 text_view_predicted_digit!!.text = digit.toString()
-            } }
+            }
+        }
 
-        //Clear the drawing canvas
+        // Clear the drawing canvas
         button_reset.setOnClickListener {
             custom_view_draw?.reset()
-            text_view_predicted_digit!!. text = ""
+            text_view_predicted_digit!!.text = ""
         }
     }
 

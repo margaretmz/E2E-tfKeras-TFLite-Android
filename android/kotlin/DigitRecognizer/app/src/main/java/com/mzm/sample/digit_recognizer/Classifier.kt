@@ -64,7 +64,7 @@ constructor(private val context: Context) {
         // Output array [batch_size, number of digits]
         val inputByteBuffer = preprocess(bitmap)                    // Input must be a ByteBuffer
         // 10 floats, each corresponds to the probability of each digit
-        val outputArray= Array(DIM_BATCH_SIZE) { FloatArray(NUM_DIGITS) }
+        val outputArray = Array(DIM_BATCH_SIZE) { FloatArray(NUM_DIGITS) }
 
         // 2. Run inference
         interpreter.run(inputByteBuffer, outputArray)
